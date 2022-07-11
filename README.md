@@ -12,8 +12,8 @@ https://chrome.google.com/webstore/detail/reading-mask/bpeknbhgjeokidlidhkbncicd
 
 ## Screenshots
 
-![ScreenShot1](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/screenshots/Screenshot1.png)
+![ScreenShot1](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/blob/master/screenshots/Screenshot1.png)
 
-![ScreenShot2](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/screenshots/Screenshot2.png)
+![ScreenShot2](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/blob/master/screenshots/Screenshot2.png)
 
-![ScreenShot3](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/screenshots/Screenshot3.png)
+![ScreenShot3](https://github.com/Indragith20/Reading-Mask-Chrome-Extension/blob/master/screenshots/Screenshot3.png)
