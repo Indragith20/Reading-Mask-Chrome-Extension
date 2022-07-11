@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel = "stylesheet"
+    type = "text/css"
+    href = "popup.css" />
+  </head>
+  <body>
+    <div class="wrap">
+        <h1>Reading Mask Configuration</h1>
+        <form id="reading-mask-form">
+          <div>
+            <label htmlFor="customHeight">
+              Height %
+            </label>
+            <input type="number" id="customHeight" min="0" max="100" />
+          </div>
+          <div>
+            <label htmlFor="customWidth">
+              Width %
+            </label>
+            <input type="number" id="customWidth" min="0" max="100"/>
+          </div>
+          <div>
+            <label htmlFor="opacity">
+              Opacity %
+            </label>
+            <input type="number" id="opacity" min="0" max="100"/>
+          </div>
+          <button type="submit" id="updateState">Update</button>
+        </form>
+    </div>
+    
+  </body>
+  <script src="popup.js"></script>
+</html>

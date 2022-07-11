@@ -1,0 +1,28 @@
+{
+  "name": "Reading Mask",
+  "version": "0.0.1",
+  "description": "An extension to focus the reading area",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "Icon-16x16.jpg",
+      "32": "Icon-32x32.jpg",
+      "48": "Icon-48x48.jpg",
+      "128": "Icon-128x128.jpg"
+    }
+  }
+}
