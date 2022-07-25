@@ -1,6 +1,6 @@
 {
   "name": "Reading Mask",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An extension to focus the reading area",
   "manifest_version": 3,
   "content_scripts": [

@@ -7,22 +7,6 @@ function inject(fn, document) {
 }
 
 
-function addListenerToIframe(iframeWindow, window) {
-  console.log("Adding Listener to Iframe", iframeWindow.body);
-  try {
-    iframeWindow.addEventListener('mousemove', (e) => {
-      console.log("Mouse ove called");
-      let diffX = window.innerWidth - iframeWindow.innerWidth;
-      let diffY = window.innerHeight - iframeWindow.innerHeight;
-      readingMask.drawRectangle(e.x + diffX, e.y + diffY);
-    })
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-
-
 function getIframeWindow(iframe_object) {
   let doc;
 
@@ -74,15 +58,24 @@ class ReadingMask {
     this.lastMouseX = 0;
     this.lastMouseY = 0;
 
+    this.isInitialized = false;
+
     this.addEventListeners = this.addEventListeners.bind(this);
+    this.removeEventListeners = this.removeEventListeners.bind(this);
     this.getCanvas = this.getCanvas.bind(this);
     this.addCanvas = this.addCanvas.bind(this);
+    this.removeCanvas = this.removeCanvas.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.onResize = this.onResize.bind(this);
     this.onScroll = this.onScroll.bind(this);
     this.drawRectangle = this.drawRectangle.bind(this);
     this.updateCanvasState = this.updateCanvasState.bind(this);
-
+    this.setMutationObserver = this.setMutationObserver.bind(this);
+    this.addListenerToIframe = this.addListenerToIframe.bind(this);
+    this.setListenerToIframe = this.setListenerToIframe.bind(this);
+    this.removeListenerToIframe = this.removeListenerToIframe.bind(this);
+    this.iframeMouseMoveListener = this.iframeMouseMoveListener.bind(this);
+    this.getIframes = this.getIframes.bind(this);
   }
 
   addEventListeners() {
@@ -91,6 +84,85 @@ class ReadingMask {
     document.addEventListener('mousemove', this.mouseMove);
     window.addEventListener('resize', this.onResize);
     window.addEventListener('scroll', this.onScroll);
+    this.setListenerToIframe();
+    this.setMutationObserver();
+  }
+
+  setListenerToIframe() {
+    let iframeList = this.getIframes();
+    if (iframeList.length > 0) {
+      for (let iframe of iframeList) {
+        let iframeWindow = getIframeWindow(iframe);
+        this.addListenerToIframe(iframeWindow, window);
+      }
+    }
+  }
+
+  removeListenerToIframe() {
+    let iframeList = this.getIframes();
+    if (iframeList.length > 0) {
+      for (let iframe of iframeList) {
+        let iframeWindow = getIframeWindow(iframe);
+        this.removeEventListenerToIframe(iframeWindow, window);
+      }
+    }
+  }
+
+  getIframes() {
+    let iframeList = document.getElementsByTagName('iframe');
+    return iframeList;
+  }
+
+  setMutationObserver() {
+    let main = this;
+    this.mutationObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(function (node) {
+            if (node.nodeName === 'IFRAME') {
+              let iframeWindow = getIframeWindow(node);
+              main.addListenerToIframe(iframeWindow, window);
+            }
+          })
+        }
+      })
+    });
+    this.mutationObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  removeMutationObserver() {
+    this.mutationObserver.disconnect();
+  }
+
+  removeEventListeners() {
+    document.removeEventListener('mousemove', this.mouseMove);
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('scroll', this.onScroll);
+    this.removeMutationObserver();
+    this.removeListenerToIframe();
+  }
+
+  iframeMouseMoveListener(e) {
+    let diffX = window.innerWidth - e.view.innerWidth;
+    let diffY = window.innerHeight - e.view.innerHeight;
+    this.drawRectangle(e.x + diffX, e.y + diffY);
+  }
+
+  addListenerToIframe(iframeWindow, window) {
+    try {
+      iframeWindow.addEventListener('mousemove', this.iframeMouseMoveListener)
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
+  removeEventListenerToIframe(iframeWindow, window) {
+    try {
+      iframeWindow.removeEventListener('mousemove', this.iframeMouseMoveListener)
+    } catch (err) {
+      console.log(err);
+    }
   }
 
 
@@ -110,6 +182,16 @@ class ReadingMask {
     canvas.style.left = window.scrollX + 'px';
     canvas.style.pointerEvents = 'none';
     document.body.appendChild(canvas);
+    this.isInitialized = true;
+  }
+
+  removeCanvas() {
+    let canvas = document.getElementById('readingMaskCanvas');
+    if (canvas) {
+      this.isInitialized = false;
+      canvas.remove();
+      this.removeEventListeners();
+    }
   }
 
   drawRectangle(currentX, currentY) {
@@ -201,7 +283,6 @@ class ReadingMask {
   }
 
   canvasOffsetChange(width, height, alpha) {
-    console.log("Changing canvas state", width, height, alpha);
     this.alpha = alpha;
     this.unit = {
       ...this.unit,
@@ -216,7 +297,6 @@ class ReadingMask {
 const readingMask = new ReadingMask();
 
 window.addEventListener('load', () => {
-  readingMask.initialize();
 
   chrome.storage.sync.get(['readingMaskConfig'], function (data) {
     let unit = {
@@ -224,10 +304,12 @@ window.addEventListener('load', () => {
       widthPercentage: 100
     };
     let alpha = 0.45;
-    let result;
+    let result = {
+      maskState: false
+    };
 
     try {
-      result = JSON.parse(data.readingMaskConfig);
+      result = { ...result, ...JSON.parse(data.readingMaskConfig) };
     } catch (err) {
       result = {
         height: unit.heightPercentage,
@@ -236,38 +318,25 @@ window.addEventListener('load', () => {
       }
     }
 
-    readingMask.canvasOffsetChange(result.width, result.height, result.alpha);
+    if (result.maskState === 'true') {
+      readingMask.initialize();
+      readingMask.canvasOffsetChange(result.width, result.height, result.alpha);
+    } else {
+      readingMask.removeCanvas();
+    }
+
+
   });
 
 })
 
 
-let iframeList = document.getElementsByTagName('iframe');
-
-if (iframeList.length > 0) {
-  for (let iframe of iframeList) {
-    let iframeWindow = getIframeWindow(iframe);
-    addListenerToIframe(iframeWindow, window);
-  }
-}
+// let iframeList = document.getElementsByTagName('iframe');
 
 
 
 
-var mutationObserver = new MutationObserver(function (mutations) {
-  mutations.forEach(mutation => {
-    if (mutation.type === 'childList') {
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeName === 'IFRAME') {
-          console.log("New Iframe has been added");
-          let iframeWindow = getIframeWindow(node);
-          addListenerToIframe(iframeWindow, window);
-        }
-      })
-    }
-  })
-});
-mutationObserver.observe(document.body, { childList: true, subtree: true });
+
 
 
 chrome.runtime.onMessage.addListener(function (message) {
@@ -276,8 +345,16 @@ chrome.runtime.onMessage.addListener(function (message) {
     // let { height, width, alpha } = message.payload;
     // readingMask.canvasOffsetChange(width, height, alpha);
   } else if (message.action === 'CHANGE_STATE') {
-    let { height, width, alpha } = message.payload;
-    readingMask.canvasOffsetChange(width, height, alpha);
+    let { height, width, alpha, maskState } = message.payload;
+    if (maskState === 'true') {
+      if (!readingMask.isInitialized) {
+        readingMask.initialize();
+      }
+      readingMask.canvasOffsetChange(width, height, alpha);
+    } else {
+      readingMask.removeCanvas();
+    }
+
   } else if (message.action === 'CALCULATE_DIFF') {
     const result = affectedEle.calculateDiff();
     console.log(result);
