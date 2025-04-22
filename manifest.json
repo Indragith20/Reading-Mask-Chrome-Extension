@@ -9,6 +9,18 @@
             "js": ["contentScript.js"]
         }
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "commands": {
+        "toggle-mask": {
+            "suggested_key": {
+                "default": "Alt+M",
+                "mac": "Alt+Shift+M"
+            },
+            "description": "Toggle Reading Mask On/Off"
+        }
+    },
     "permissions": ["storage"],
     "action": {
         "default_popup": "popup.html",

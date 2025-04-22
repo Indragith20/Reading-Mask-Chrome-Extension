@@ -1,5 +1,3 @@
-
-
 chrome.storage.sync.get(['readingMaskConfig'], function (data) {
   let unit = {
     heightPercentage: 25,
@@ -77,8 +75,34 @@ document.getElementById('updateState').addEventListener('click', function (e) {
   }
   chrome.storage.sync.set({ readingMaskConfig: JSON.stringify(config) }, function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, { action: "CHANGE_STATE", payload: { height, width, alpha, maskState } });
-      window.close();
+      chrome.tabs.sendMessage(tabs[0].id, { action: "CHANGE_STATE", payload: { height, width, alpha, maskState } }, function (response) {
+        // Check if we got a response from the content script
+        if (chrome.runtime.lastError || !response) {
+          // Content script didn't respond, need page reload
+          if (confirm("Settings saved. Some changes require a page reload to take effect. Reload now?")) {
+            chrome.tabs.reload(tabs[0].id);
+          }
+        } else {
+          // Show a small notification that changes were applied
+          let statusElement = document.createElement('div');
+          statusElement.textContent = "Changes applied successfully!";
+          statusElement.style.position = "fixed";
+          statusElement.style.bottom = "10px";
+          statusElement.style.left = "50%";
+          statusElement.style.transform = "translateX(-50%)";
+          statusElement.style.backgroundColor = "var(--accent-color)";
+          statusElement.style.color = "white";
+          statusElement.style.padding = "8px 16px";
+          statusElement.style.borderRadius = "4px";
+          statusElement.style.zIndex = "1000";
+          document.body.appendChild(statusElement);
+
+          // Close popup after a short delay
+          setTimeout(() => {
+            window.close();
+          }, 1500);
+        }
+      });
     });
   });
 

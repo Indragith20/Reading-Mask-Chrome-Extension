@@ -12,6 +12,7 @@ Reading Mask is a Chrome extension designed to enhance your reading experience b
 - **Cross-page Compatibility**: Works seamlessly across websites, including those with iframes
 - **Light/Dark Mode Support**: Automatically adapts to your system theme preference
 - **Simple Controls**: Easy-to-use interface with persistent settings
+- **Keyboard Shortcut**: Toggle the mask on/off quickly using Alt+M
 
 Perfect for readers who struggle with focus, those who read lengthy content, or anyone looking to reduce eye strain during extended reading sessions.
 
@@ -23,6 +24,11 @@ The Reading Mask follows your mouse cursor automatically, highlighting only the 
 2. Toggle the mask on/off
 3. Adjust height, width, and opacity percentages to your preference
 4. Click "Apply Changes" to save your settings
+
+### Keyboard Shortcuts
+
+- **Windows/Linux**: Alt+M to toggle the Reading Mask on/off
+- **macOS**: Option+Shift+M (⌥+⇧+M) to toggle the Reading Mask on/off
 
 ### Installing
 

@@ -1,5 +1,3 @@
-
-
 function inject(fn, document) {
   const script = document.createElement('script')
   script.text = `(${fn.toString()})();`
@@ -339,11 +337,12 @@ window.addEventListener('load', () => {
 
 
 
-chrome.runtime.onMessage.addListener(function (message) {
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   console.log("Message Received", message)
   if (message.action === 'INITIALIZE') {
     // let { height, width, alpha } = message.payload;
     // readingMask.canvasOffsetChange(width, height, alpha);
+    sendResponse({ success: true });
   } else if (message.action === 'CHANGE_STATE') {
     let { height, width, alpha, maskState } = message.payload;
     if (maskState === 'true') {
@@ -354,12 +353,18 @@ chrome.runtime.onMessage.addListener(function (message) {
     } else {
       readingMask.removeCanvas();
     }
-
+    // Send response to let popup know changes were applied
+    sendResponse({ success: true });
   } else if (message.action === 'CALCULATE_DIFF') {
     const result = affectedEle.calculateDiff();
     console.log(result);
+    sendResponse({ success: true });
   } else if (message.action === 'RESET_STYLES') {
     affectedEle.resetStyles();
+    sendResponse({ success: true });
   }
+
+  // Return true to indicate we'll send a response asynchronously
+  return true;
 });
 
