@@ -1,46 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel = "stylesheet"
-    type = "text/css"
-    href = "popup.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="popup.css" />
   </head>
   <body>
     <div class="wrap">
-        <h3 style="text-align: center">Reading Mask Configuration</h3>
+        <h3>Reading Mask</h3>
         <form id="reading-mask-form">
-          <div style="display: flex; justify-content: space-evenly; margin: 10px 5px">
-            <span style="text-align: center">Enable Mask</span>
+          <div class="form-row">
+            <label for="maskState">Enable Mask</label>
             <label class="switch" id="switch">
-              
               <input type="checkbox" id="maskState">
               <span class="slider round"></span>
             </label>
           </div>
-          <div style="display: flex; justify-content: space-evenly; margin: 10px 5px">
-            <label htmlFor="customHeight">
-              Height %
-            </label>
+          <div class="form-row">
+            <label for="customHeight">Height %</label>
             <input type="number" id="customHeight" min="0" max="100" />
           </div>
-          <div style="display: flex; justify-content: space-evenly; margin: 10px 5px">
-            <label htmlFor="customWidth">
-              Width %
-            </label>
+          <div class="form-row">
+            <label for="customWidth">Width %</label>
             <input type="number" id="customWidth" min="0" max="100"/>
           </div>
-          <div style="display: flex; justify-content: space-evenly; margin: 10px 5px">
-            <label htmlFor="opacity">
-              Opacity %
-            </label>
+          <div class="form-row">
+            <label for="opacity">Opacity %</label>
             <input type="number" id="opacity" min="0" max="100"/>
           </div>
-          <div style="display: flex; justify-content: space-evenly; margin: 10px 5px">
-          <button type="submit" id="updateState">Update</button>
-          </div>
+          <button type="submit" id="updateState">Apply Changes</button>
         </form>
     </div>
-    
+    <script src="popup.js"></script>
   </body>
-  <script src="popup.js"></script>
 </html>
