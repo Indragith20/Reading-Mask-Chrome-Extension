@@ -1,3 +1,18 @@
+// Set the appropriate keyboard shortcut based on platform
+function setKeyboardShortcut() {
+  const shortcutElement = document.getElementById('shortcutKey');
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
+  if (isMac) {
+    shortcutElement.textContent = 'Option + Shift + M (⌥⇧M)';
+  } else {
+    shortcutElement.textContent = 'Alt+M';
+  }
+}
+
+// Initialize shortcut display
+setKeyboardShortcut();
+
 chrome.storage.sync.get(['readingMaskConfig'], function (data) {
   let unit = {
     heightPercentage: 25,
