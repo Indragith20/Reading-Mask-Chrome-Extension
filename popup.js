@@ -1,17 +1,20 @@
-// Set the appropriate keyboard shortcut based on platform
-function setKeyboardShortcut() {
-  const shortcutElement = document.getElementById('shortcutKey');
+// Set the appropriate keyboard shortcuts based on platform
+function setKeyboardShortcuts() {
+  const toggleElement = document.getElementById('toggleShortcut');
+  const freezeElement = document.getElementById('freezeShortcut');
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
   if (isMac) {
-    shortcutElement.textContent = 'Option + Shift + M (⌥⇧M)';
+    toggleElement.textContent = '⌥ + ⇧ + M';
+    freezeElement.textContent = '⌥ + ⇧ + N';
   } else {
-    shortcutElement.textContent = 'Alt+M';
+    toggleElement.textContent = 'Alt + M';
+    freezeElement.textContent = 'Alt + N';
   }
 }
 
 // Initialize shortcut display
-setKeyboardShortcut();
+setKeyboardShortcuts();
 
 chrome.storage.sync.get(['readingMaskConfig'], function (data) {
   let unit = {

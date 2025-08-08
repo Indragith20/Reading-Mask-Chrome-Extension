@@ -1,6 +1,6 @@
 {
     "name": "Reading Mask",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Enhance focus while reading with a customizable highlight that follows your cursor, reducing distractions and eye strain.",
     "manifest_version": 3,
     "content_scripts": [
@@ -19,6 +19,13 @@
                 "mac": "Alt+Shift+M"
             },
             "description": "Toggle Reading Mask On/Off"
+        },
+        "freeze-mask": {
+            "suggested_key": {
+                "default": "Alt+N",
+                "mac": "Alt+Shift+N"
+            },
+            "description": "Freeze/Unfreeze Reading Mask Position"
         }
     },
     "permissions": ["storage"],

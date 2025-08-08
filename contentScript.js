@@ -55,6 +55,9 @@ class ReadingMask {
 
     this.lastMouseX = 0;
     this.lastMouseY = 0;
+    this.isFrozen = false; // New property to track freeze state
+    this.frozenX = 0; // Store frozen position
+    this.frozenY = 0;
 
     this.isInitialized = false;
 
@@ -74,6 +77,7 @@ class ReadingMask {
     this.removeListenerToIframe = this.removeListenerToIframe.bind(this);
     this.iframeMouseMoveListener = this.iframeMouseMoveListener.bind(this);
     this.getIframes = this.getIframes.bind(this);
+    this.toggleFreeze = this.toggleFreeze.bind(this); // New method
   }
 
   addEventListeners() {
@@ -141,9 +145,11 @@ class ReadingMask {
   }
 
   iframeMouseMoveListener(e) {
-    let diffX = window.innerWidth - e.view.innerWidth;
-    let diffY = window.innerHeight - e.view.innerHeight;
-    this.drawRectangle(e.x + diffX, e.y + diffY);
+    if (!this.isFrozen) {
+      let diffX = window.innerWidth - e.view.innerWidth;
+      let diffY = window.innerHeight - e.view.innerHeight;
+      this.drawRectangle(e.x + diffX, e.y + diffY);
+    }
   }
 
   addListenerToIframe(iframeWindow, window) {
@@ -236,7 +242,9 @@ class ReadingMask {
 
 
   mouseMove(e) {
-    this.drawRectangle(e.x, e.y);
+    if (!this.isFrozen) {
+      this.drawRectangle(e.x, e.y);
+    }
   }
 
   onScroll(e) {
@@ -244,7 +252,14 @@ class ReadingMask {
       let canvas = this.getCanvas();
       canvas.style.top = window.scrollY + 'px';
       canvas.style.left = window.scrollX + 'px';
-      this.drawRectangle(this.lastMouseX, this.lastMouseY);
+
+      if (this.isFrozen) {
+        // When frozen, maintain the mask at the frozen position
+        this.drawRectangle(this.frozenX, this.frozenY);
+      } else {
+      // When not frozen, follow the last mouse position
+        this.drawRectangle(this.lastMouseX, this.lastMouseY);
+      }
     })
   }
 
@@ -268,7 +283,14 @@ class ReadingMask {
     canvas.setAttribute('height', this.canvasState.height);
     canvas.style.top = window.scrollY + 'px';
     canvas.style.left = window.scrollX + 'px';
-    this.drawRectangle(this.lastMouseX, this.lastMouseY);
+
+    if (this.isFrozen) {
+      // When frozen, maintain the mask at the frozen position
+      this.drawRectangle(this.frozenX, this.frozenY);
+    } else {
+    // When not frozen, follow the last mouse position
+      this.drawRectangle(this.lastMouseX, this.lastMouseY);
+    }
   }
 
   onResize() {
@@ -288,6 +310,20 @@ class ReadingMask {
       widthPercentage: width
     };
     this.updateCanvasState();
+  }
+
+  toggleFreeze() {
+    this.isFrozen = !this.isFrozen;
+
+    if (this.isFrozen) {
+      // Store current position when freezing
+      this.frozenX = this.lastMouseX;
+      this.frozenY = this.lastMouseY;
+    }
+    //  else {
+    //   // Resume following cursor when unfreezing
+    //   console.log('Reading mask unfrozen, now following cursor');
+    // }
   }
 }
 
@@ -338,7 +374,6 @@ window.addEventListener('load', () => {
 
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log("Message Received", message)
   if (message.action === 'INITIALIZE') {
     // let { height, width, alpha } = message.payload;
     // readingMask.canvasOffsetChange(width, height, alpha);
@@ -355,13 +390,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
     // Send response to let popup know changes were applied
     sendResponse({ success: true });
-  } else if (message.action === 'CALCULATE_DIFF') {
-    const result = affectedEle.calculateDiff();
-    console.log(result);
-    sendResponse({ success: true });
-  } else if (message.action === 'RESET_STYLES') {
-    affectedEle.resetStyles();
-    sendResponse({ success: true });
+  } else if (message.action === 'TOGGLE_FREEZE') {
+    if (readingMask.isInitialized) {
+      readingMask.toggleFreeze();
+      sendResponse({ success: true });
+    } else {
+      sendResponse({ success: false, error: 'Mask not initialized' });
+    }
   }
 
   // Return true to indicate we'll send a response asynchronously

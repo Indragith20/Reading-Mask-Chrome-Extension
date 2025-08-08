@@ -38,5 +38,13 @@ chrome.commands.onCommand.addListener((command) => {
         });
       });
     });
+  } else if (command === "freeze-mask") {
+    // Query for the active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      // Send message to content script to toggle freeze state
+      chrome.tabs.sendMessage(tabs[0].id, {
+        action: "TOGGLE_FREEZE"
+      });
+    });
   }
 });

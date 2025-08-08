@@ -27,8 +27,14 @@ The Reading Mask follows your mouse cursor automatically, highlighting only the 
 
 ### Keyboard Shortcuts
 
-- **Windows/Linux**: Alt+M to toggle the Reading Mask on/off
-- **macOS**: Option+Shift+M (⌥+⇧+M) to toggle the Reading Mask on/off
+- **Windows/Linux**: 
+  - Alt+M to toggle the Reading Mask on/off
+  - Alt+N to freeze/unfreeze the mask position
+- **macOS**: 
+  - Option+Shift+M (⌥+⇧+M) to toggle the Reading Mask on/off
+  - Option+Shift+N (⌥+⇧+N) to freeze/unfreeze the mask position
+
+**Freeze Feature**: When you press the freeze shortcut, the mask will stay in its current position and won't follow your cursor. This allows you to move your cursor freely to click on links, buttons, or interact with the page while keeping the reading area highlighted. Press the freeze shortcut again to resume cursor following.
 
 ### Installing
 
