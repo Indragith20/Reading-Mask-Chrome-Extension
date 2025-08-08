@@ -5,8 +5,8 @@ function setKeyboardShortcuts() {
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
   if (isMac) {
-    toggleElement.textContent = '⌥ + ⇧ + M';
-    freezeElement.textContent = '⌥ + ⇧ + N';
+    toggleElement.textContent = 'Option + Shift + M';
+    freezeElement.textContent = 'Option + Shift + N';
   } else {
     toggleElement.textContent = 'Alt + M';
     freezeElement.textContent = 'Alt + N';
