@@ -1,6 +1,6 @@
 {
     "name": "Reading Mask",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Enhance focus while reading with a customizable highlight that follows your cursor, reducing distractions and eye strain.",
     "manifest_version": 3,
     "content_scripts": [
